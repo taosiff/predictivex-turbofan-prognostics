@@ -1,3 +1,15 @@
+---
+title: PredictiveX Turbofan Prognostics
+emoji: ⚡
+colorFrom: green
+colorTo: gray
+sdk: streamlit
+sdk_version: 1.67.0
+app_file: app.py
+pinned: false
+license: mit
+---
+
 # PredictiveX: Industrial Predictive Maintenance & RUL Platform
 
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
