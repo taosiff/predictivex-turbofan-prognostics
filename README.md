@@ -1,15 +1,3 @@
----
-title: PredictiveX Turbofan Prognostics
-emoji: ⚡
-colorFrom: green
-colorTo: gray
-sdk: gradio
-sdk_version: 6.32.0
-app_file: app.py
-pinned: false
-license: mit
----
-
 # PredictiveX: Industrial Predictive Maintenance & RUL Platform
 
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
@@ -18,9 +6,9 @@ license: mit
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.67-FF4B4B.svg?style=flat&logo=streamlit&logoColor=white)](https://streamlit.io/)
 [![License](https://img.shields.io/badge/License-MIT-00FF66.svg?style=flat)](#license)
 
-**PredictiveX** is an industrial predictive maintenance (PdM) and Remaining Useful Life (RUL) estimation platform. Built with PyTorch and accelerated with CUDA 12.8 on an NVIDIA RTX 4080 SUPER, it transforms multivariate industrial sensor telemetry into calibrated degradation trajectories, epistemic uncertainty intervals, horizon hazard probabilities, and anomaly alerts.
+**PredictiveX** is an end-to-end industrial predictive maintenance (PdM) and Remaining Useful Life (RUL) estimation platform. Built with PyTorch and accelerated by CUDA 12.8 on an NVIDIA RTX 4080 SUPER, it transforms multivariate sensor telemetry into calibrated degradation trajectories, epistemic uncertainty intervals, hazard failure probabilities, and anomaly alerts.
 
-The system is evaluated against the gold-standard **NASA C-MAPSS (Commercial Modular Aero-Propulsion System Simulation)** benchmark across 12 distinct machine learning and deep sequence architectures under the official asymmetric evaluation scoring protocol.
+The platform is experimentally evaluated on the **NASA C-MAPSS (Commercial Modular Aero-Propulsion System Simulation)** benchmark across 12 distinct machine learning and deep sequence architectures under the official asymmetric evaluation scoring metric.
 
 ---
 
@@ -28,31 +16,31 @@ The system is evaluated against the gold-standard **NASA C-MAPSS (Commercial Mod
 
 ```mermaid
 flowchart TD
-    subgraph DataPipeline ["Zero-Leakage Data Pipeline"]
-        A["Industrial Telemetry\n(C-MAPSS FD001-FD004)"] --> B["CMAPSSPreprocessor\n(Fit Exclusively on Train)"]
+    subgraph Ingestion ["Zero-Leakage Data Pipeline"]
+        A["Sensor Telemetry\n(C-MAPSS FD001-FD004)"] --> B["CMAPSSPreprocessor\n(Fit Exclusively on Train)"]
         B --> C["Rolling Tabular Pipeline\n(240 Feature Channels)"]
         B --> D["Sliding Sequence Generator\n(T=30 Cycles)"]
     end
 
-    subgraph ModelSuite ["Benchmark Modeling Suite"]
+    subgraph Modeling ["Benchmark Modeling Suite"]
         C --> E["Classical GBDT Suite\n(CatBoost, LightGBM, XGBoost, SVR)"]
-        D --> F["PyTorch Neural Suite\n(PatchTST, Transformer, TCN, LSTM, GRU)"]
+        D --> F["Deep Learning Suite (RTX 4080)\n(PatchTST, Transformer, TCN, LSTM, GRU)"]
         D --> G["LSTM Autoencoder\n(Unsupervised Anomaly Scoring)"]
         D --> H["Horizon Hazard Classifier\n(Failure Risk <= 15 Cycles)"]
     end
 
-    subgraph Diagnostics ["Serving & Decision Support"]
+    subgraph Serving ["Diagnostics & Deployment"]
         F --> I["Monte Carlo Dropout\n(80% Confidence Bounds)"]
         F & G & H & I --> J["FastAPI REST Service\n(Asynchronous Sub-ms Latency)"]
-        J --> K["Streamlit Operations Hub\n(Midnight Black & Lime Green UI)"]
+        J --> K["Streamlit Operations Dashboard\n(Midnight Black & Lime Green UI)"]
     end
 ```
 
 ---
 
-## Benchmark Results (NASA C-MAPSS FD001)
+## Experimental Benchmark Results (NASA C-MAPSS FD001)
 
-All models were evaluated strictly against the **100 test engines** at their final recorded operational cycles according to the official NASA prognostic protocol. The **NASA Score ($S$)** applies an exponential penalty for late predictions ($\hat{y} > y$) to reflect the catastrophic risk of unexpected in-service engine failures:
+All models were evaluated on the **100 test engines** at their final recorded cycles using the official benchmark ground truth. The **NASA Score ($S$)** applies an exponential penalty for late predictions ($\hat{y} > y$) to reflect the operational danger of unexpected in-flight failures:
 
 $$d_i = \hat{y}_i - y_i, \quad s_i = \begin{cases} e^{-d_i / 13} - 1 & \text{if } d_i < 0 \text{ (Early / Safe)} \\ e^{d_i / 10} - 1 & \text{if } d_i \ge 0 \text{ (Late / Dangerous)} \end{cases}$$
 
@@ -69,31 +57,31 @@ $$d_i = \hat{y}_i - y_i, \quad s_i = \begin{cases} e^{-d_i / 13} - 1 & \text{if 
 | **GRU** | Recurrent Neural | 15.27 | 11.08 | 453.1 | 0.8650 | 0.022 ms |
 | **LSTM** | Recurrent Neural | 15.19 | 11.03 | 472.8 | 0.8663 | 0.018 ms |
 | **Temporal Transformer** | Self-Attention | 15.04 | 11.25 | **384.9** | 0.8690 | 0.022 ms |
-| **PatchTST (Top Overall)** | Patch-based Attention | **14.84** | **10.95** | **400.0** | **0.8725** | **0.029 ms** |
+| **PatchTST (Top Overall)** | Patch Attention | **14.84** | **10.95** | **400.0** | **0.8725** | **0.029 ms** |
 
-### Benchmark Takeaways:
-1. **Deep Attention Superiority**: PatchTST reduced Test RMSE by **17.6%** over the strongest classical baseline (CatBoost at 18.02 $\to$ 14.84 cycles).
-2. **Asymmetric Risk Mitigation**: The Temporal Transformer and PatchTST architectures slashed the asymmetric NASA failure penalty from 1697.1 (Random Forest) down to **384.9** (a **77% penalty reduction**).
-3. **GPU Mixed-Precision Efficiency**: Utilizing PyTorch Automatic Mixed Precision (AMP) on an NVIDIA RTX 4080 SUPER enabled sub-second per-epoch training and sub-0.05 ms inference latency per asset.
+### Key Benchmark Insights:
+1. **Deep Attention Superiority**: PatchTST achieved a **17.6% reduction in RMSE** (18.02 to 14.84 cycles) compared to the strongest classical baseline (CatBoost).
+2. **Asymmetric Penalty Reduction**: The Temporal Transformer and PatchTST architectures cut the NASA penalty score from 1697.1 (Random Forest) down to **384.9** (a **77% penalty reduction**).
+3. **GPU Mixed-Precision Throughput**: Automatic Mixed Precision (AMP) on an NVIDIA RTX 4080 SUPER enabled sub-second epoch training and sub-0.05 ms inference latency per unit.
 
 ---
 
 ## Auxiliary Diagnostic Modalities
 
-| Prognostic Vector | Methodology | Benchmark Metric | Result | Operational Utility |
+| Prognostic Vector | Methodology | Key Metric | Result | Operational Utility |
 |---|---|---|---|---|
 | **Sensor Anomaly Detection** | LSTM Autoencoder | Test ROC-AUC / PR-AUC | **0.9413 / 0.8494** | Unsupervised early-stage wear detection |
-| **Failure Hazard Estimation** | Horizon Classifier ($H \le 15$) | Test ROC-AUC / PR-AUC | **0.9856 / 0.9068** | Immediate automated work-order dispatch |
+| **Failure Hazard Estimation** | Horizon Classifier ($H \le 15$) | Test ROC-AUC / PR-AUC | **0.9856 / 0.9068** | Automated emergency dispatch alert |
 | **Epistemic Uncertainty** | Monte Carlo Dropout | Mean Interval Width | **13.0 cycles** | Risk-calibrated confidence intervals |
-| **Health Degradation Index** | Latent Autoencoder | Spearman Trendability | **0.9290** | Monotonic continuous asset wear index |
+| **Degradation Health Index** | Latent Autoencoder | Spearman Trendability | **0.9290** | Monotonic continuous wear tracking |
 
 ---
 
-## Explainability & Sensor Saliency
+## Explainability & Feature Saliency
 
-PredictiveX implements dual interpretability:
+PredictiveX incorporates dual-modality interpretability:
 - **Tree SHAP**: Identifies key tabular wear features on gradient boosted models: `s_4` (LPT outlet temperature), `s_9` (Physical core speed), and `s_11` (HPC outlet static pressure).
-- **Temporal Input $\times$ Gradient Saliency**: Confirms that deep sequence models focus primarily on recent operational cycles ($t-9 \dots t$) where wear acceleration is pronounced.
+- **Temporal Input $\times$ Gradient Saliency**: Confirms that deep sequence models concentrate attention on recent operational cycles ($t-9 \dots t$) where wear acceleration is pronounced.
 
 ---
 
@@ -102,13 +90,13 @@ PredictiveX implements dual interpretability:
 ```
 .
 ├── api/
-│   └── main.py                     # Production FastAPI REST service
+│   └── main.py                     # Production FastAPI REST backend
 ├── checkpoints/
-│   ├── classical/                  # Trained CatBoost, XGBoost, SVR models & scalers
-│   ├── deep_learning/              # PyTorch model weights (PatchTST, LSTM, etc.)
-│   └── advanced/                   # Hazard classifier & Health Indicator checkpoints
+│   ├── classical/                  # Saved GBDT / SVR weights & scalers
+│   ├── deep_learning/              # PyTorch model weights (PatchTST, Transformer, etc.)
+│   └── advanced/                   # Hazard classifier & Health Indicator weights
 ├── data/
-│   └── raw/cmapss/                 # Verified NASA C-MAPSS data (FD001-FD004)
+│   └── raw/cmapss/                 # Verified NASA C-MAPSS dataset (FD001-FD004)
 ├── frontend/
 │   └── dashboard.py                # Streamlit Operations Hub (Midnight Black & Lime Green)
 ├── scripts/
@@ -131,6 +119,7 @@ PredictiveX implements dual interpretability:
 │   └── utils/metrics.py            # NASA scoring function, RMSE, MAE, R2
 ├── tests/
 │   └── test_pipeline.py            # 8 Pytest unit and integration test suites
+├── app.py                          # Dual-mode web application entrypoint
 ├── Dockerfile                      # Production container image
 ├── docker-compose.yml              # Multi-container service definition
 └── requirements.txt                # Pinned dependencies
@@ -142,8 +131,8 @@ PredictiveX implements dual interpretability:
 
 ### 1. Installation
 ```bash
-git clone https://github.com/<your-username>/<repo-name>.git
-cd <repo-name>
+git clone https://github.com/taosiff/predictivex-turbofan-prognostics.git
+cd predictivex-turbofan-prognostics
 
 # Install dependencies
 pip install -r requirements.txt
@@ -160,7 +149,7 @@ streamlit run frontend/dashboard.py
 ```
 Open `http://localhost:8501` to view the **Midnight Black & Electric Lime Green** industrial dashboard.
 
-### 4. Launch the FastAPI REST Service
+### 4. Launch the FastAPI REST Backend
 ```bash
 uvicorn api.main:app --host 0.0.0.0 --port 8000
 ```
@@ -174,18 +163,12 @@ pytest tests/test_pipeline.py -v
 
 ---
 
-## Free Cloud Deployment
+## Cloud Deployment
 
-### A. Deploy Streamlit Dashboard on Streamlit Community Cloud (100% Free)
-1. Push this repository to your GitHub account.
-2. Go to [share.streamlit.io](https://share.streamlit.io/) and sign in with GitHub.
+### Deploy on Streamlit Community Cloud (Free)
+1. Fork or push this repository to your GitHub account.
+2. Sign in to [share.streamlit.io](https://share.streamlit.io/).
 3. Click **"New app"**, select your repository, set the main file path to `frontend/dashboard.py`, and click **Deploy**.
-4. Your dashboard will be live on a public URL at no cost.
-
-### B. Deploy on Hugging Face Spaces (100% Free)
-1. Create a free account on [huggingface.co](https://huggingface.co/).
-2. Create a **New Space**, choose **Streamlit** as the SDK.
-3. Link your GitHub repository or push the code directly to Hugging Face Git.
 
 ---
 
@@ -193,9 +176,9 @@ pytest tests/test_pipeline.py -v
 - **CPU**: Intel Core i7-14700K (20 physical cores, 28 threads)
 - **GPU**: NVIDIA GeForce RTX 4080 SUPER (16 GB VRAM)
 - **CUDA Runtime**: 12.8 / Driver API 13.3
-- **PyTorch**: 2.11.0+cu128
+- **Framework**: PyTorch 2.11.0+cu128
 
 ---
 
 ## License
-Distributed under the MIT License. See [LICENSE](LICENSE) for details.
+Distributed under the MIT License.
