@@ -1,10 +1,13 @@
 # PredictiveX: Industrial Predictive Maintenance & RUL Platform
 
+[![Live Demo](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://predictivex-turbofan-prognostics-toudm4mcggtpdwglapppvbw.streamlit.app/)
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.11%20CUDA%2012.8-EE4C2C.svg?style=flat&logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.165-009688.svg?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.67-FF4B4B.svg?style=flat&logo=streamlit&logoColor=white)](https://streamlit.io/)
 [![License](https://img.shields.io/badge/License-MIT-00FF66.svg?style=flat)](#license)
+
+> 🚀 **Live Interactive Dashboard**: Access the deployed platform at **[predictivex-turbofan-prognostics.streamlit.app](https://predictivex-turbofan-prognostics-toudm4mcggtpdwglapppvbw.streamlit.app/)**
 
 **PredictiveX** is an end-to-end industrial predictive maintenance (PdM) and Remaining Useful Life (RUL) estimation platform. Built with PyTorch and accelerated by CUDA 12.8 on an NVIDIA RTX 4080 SUPER, it transforms multivariate sensor telemetry into calibrated degradation trajectories, epistemic uncertainty intervals, hazard failure probabilities, and anomaly alerts.
 
@@ -163,9 +166,12 @@ pytest tests/test_pipeline.py -v
 
 ---
 
-## Cloud Deployment
+## Live Cloud Deployment
 
-### Deploy on Streamlit Community Cloud (Free)
+The interactive dashboard is live on Streamlit Community Cloud:
+- **Public URL**: **[https://predictivex-turbofan-prognostics-toudm4mcggtpdwglapppvbw.streamlit.app/](https://predictivex-turbofan-prognostics-toudm4mcggtpdwglapppvbw.streamlit.app/)**
+
+### Self-Hosting on Streamlit Community Cloud (Free)
 1. Fork or push this repository to your GitHub account.
 2. Sign in to [share.streamlit.io](https://share.streamlit.io/).
 3. Click **"New app"**, select your repository, set the main file path to `frontend/dashboard.py`, and click **Deploy**.
